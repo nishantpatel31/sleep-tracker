@@ -30,6 +30,8 @@ export const authenticateToken = (req, res, next) => {
         )
       );
     }
+  } else {
+    req.role = "visitor";
   }
 
   next();
