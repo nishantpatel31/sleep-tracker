@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="auth-style.css" />
+</head>
+<body>
+  <form id="loginForm" novalidate>
+    <h2>Login to Sleep Tracker</h2>
+    <label for="nickname" class="sr-only">Nickname</label>
+    <input type="text" id="nickname" placeholder="Enter nickname" required />
+    
+    <label for="password" class="sr-only">Password</label>
+    <input type="password" id="password" placeholder="Enter password" required />
+    <button type="submit">Login</button>
+    <p id="response"></p>
+    <p style="text-align: center;">New here? <a href="sign-up.html">Signup</a></p>
+  </form>
+  <script src="sign-in.js"></script>
+</body>
+</html>

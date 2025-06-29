@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup | Sleep Tracker</title>
+  <link rel="stylesheet" href="auth-style.css" />
+</head>
+<body>
+  <form id="signupForm" novalidate>
+    <h2>Sign Up for Sleep Tracker</h2>
+
+    <label for="nickname" class="sr-only">Nickname</label>
+    <input
+      type="text"
+      id="nickname"
+      name="nickname"
+      placeholder="Enter nickname"
+      required
+      autocomplete="username"
+    />
+
+    <label for="password" class="sr-only">Password</label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      placeholder="Enter password"
+      required
+      autocomplete="new-password"
+    />
+
+    <button type="submit">Sign Up</button>
+
+    <p id="response" aria-live="polite"></p>
+
+    <p style="text-align: center;">
+      Already have an account? <a href="sign-in.html">Log in</a>
+    </p>
+  </form>
+
+  <script src="sign-up.js"></script>
+</body>
+</html>
