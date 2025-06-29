@@ -6,6 +6,7 @@
  * @returns {Function} - Express middleware function
  */
 export const authorizeRole = (...allowedRoles) => {
+  allowedRoles = allowedRoles || []; // fallback in case it's undefined
   return (req, res, next) => {
     // Check if user info is attached by authentication middleware
     if (!req?.role) {
