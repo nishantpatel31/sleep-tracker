@@ -21,6 +21,7 @@ export const authorizeRole = (...allowedRoles) => {
 
     // If no specific roles defined, allow all authenticated users
     if (allowedRoles.length === 0) return next();
+    console.log(allowedRoles)
 
     // Deny access if user's role is not in allowed roles
     if (!allowedRoles.includes(req.role)) {
