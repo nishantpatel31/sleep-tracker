@@ -10,6 +10,7 @@ export const authorizeRole = (...allowedRoles) => {
   return (req, res, next) => {
     // Check if user info is attached by authentication middleware
     if (!req?.role) {
+      console.log(req.role);
       return res.status(401).json({
         success: false,
         error: {
