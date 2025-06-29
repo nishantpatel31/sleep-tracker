@@ -38,8 +38,14 @@ app.use("/api/auth", authRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
 // ----------- Static Frontend Serving ------------
-const frontendPath = path.resolve(__dirname, "../../sleep-tracker-frontend");
-app.use(express.static(frontendPath));
+const publicPath = path.join(__dirname, "../public");
+app.use(express.static(publicPath));
+
+// Optional: serve index.html at root
+app.get("/", (req, res) => {
+  res.sendFile(path.join(publicPath, "index.html"));
+});
+
 
 // ----------- Centralized Error Handling ------------
 app.use((err, req, res, next) => {
