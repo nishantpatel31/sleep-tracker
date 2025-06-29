@@ -1,144 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sleep Tracker API</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f3f4f6;
-      padding: 2rem;
-      color: #1f2937;
-    }
-
-    h1 {
-      color: #4f46e5;
-      margin-bottom: 0.5rem;
-    }
-
-    .top-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    .greeting {
-      font-size: 1rem;
-      font-weight: bold;
-    }
-
-    .auth-buttons,
-    .logout-button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    button {
-      background: #4f46e5;
-      color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-      font-size: 0.9rem;
-    }
-
-    button:hover {
-      background: #4338ca;
-    }
-
-    ul {
-      background: white;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    }
-
-    code {
-      background: #e5e7eb;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.95rem;
-    }
-
-    a {
-      color: #4f46e5;
-    }
-
-    pre {
-      background: #e5e7eb;
-      padding: 1rem;
-      border-radius: 8px;
-      overflow-x: auto;
-    }
-
-    .hidden {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>Sleep Tracker API</h1>
-
-  <div class="top-section">
-    <!-- Greeting shown if user is logged in -->
-    <div id="greeting" class="greeting hidden">
-      👋 Welcome back, <span id="username">User</span>!
-    </div>
-
-    <!-- Auth or logout buttons -->
-    <div>
-      <div id="auth-buttons" class="auth-buttons">
-        <button onclick="window.location.href='/sign-in.html'">Sign In</button>
-        <button onclick="window.location.href='/sign-up.html'">Sign Up</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sleep Tracker API Docs</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f9fafb;
+        color: #1f2937;
+        padding: 2rem;
+      }
+      h1,
+      h2 {
+        color: #4f46e5;
+      }
+      section {
+        margin-bottom: 2rem;
+      }
+      code,
+      pre {
+        background: #f3f4f6;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: block;
+      }
+      .endpoint {
+        font-weight: bold;
+        color: #059669;
+      }
+      .method {
+        font-weight: bold;
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 0.4rem;
+      }
+      ul {
+        background: #ffffff;
+        padding: 1rem;
+        border-radius: 6px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+      li {
+        margin-bottom: 0.5rem;
+      }
+      a {
+        color: #2563eb;
+      }
+      .section-title {
+        border-bottom: 1px solid #d1d5db;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+      }
+      .top-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+      .greeting {
+        font-size: 1rem;
+        font-weight: bold;
+      }
+      .auth-buttons,
+      .logout-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      button {
+        background: #4f46e5;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+        font-size: 0.9rem;
+      }
+      button:hover {
+        background: #4338ca;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>💤 Sleep Tracker API</h1>
+    <div class="top-section">
+      <div id="greeting" class="greeting hidden">
+        👋 Welcome back, <span id="username">User</span>!
       </div>
-
-      <div id="logout-button" class="logout-button hidden">
-        <button onclick="logout()">Logout</button>
+      <div>
+        <div id="auth-buttons" class="auth-buttons">
+          <button onclick="window.location.href='/sign-in.html'">
+            Sign In
+          </button>
+          <button onclick="window.location.href='/sign-up.html'">
+            Sign Up
+          </button>
+        </div>
+        <div id="logout-button" class="logout-button hidden">
+          <button onclick="logout()">Logout</button>
+        </div>
       </div>
     </div>
-  </div>
+    <p>
+      The Sleep Tracker API supports user authentication and a multi-step
+      onboarding flow to collect sleep-related data like habits, struggles,
+      sleep/wake times, and duration. Each onboarding screen uses a common POST
+      endpoint with different <code>stepKey</code>. JWT tokens are used for
+      secure access. Analytics APIs track screen engagement and drop-offs. All
+      requests use <code>application/json</code>.
+    </p>
+    <section>
+      <h2 class="section-title">🔹 Onboarding</h2>
+      <ul>
+        <li>
+          <span class="method">POST</span>
+          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span><br />
+          <strong>Purpose:</strong> Capture what sleep improvements
+          the user wants.<br />
+          <pre>
+{
+  "identity": "45",
+  "stepKey": "sleepHabitChange",
+  "data": {
+    "sleepHabitChange": [
+        "I would go to sleep easily",
+        "I would sleep through the night"
+    ]
+  },
+  "meta": {
+    "enteredAt": "2025-06-29T06:05:00Z" ,
+    "exitedAt": "2025-06-29T06:06:40Z"
+    },
+  "onboardingComplete": false
+}
+</pre
+          >
+        </li>
 
-  <ul>
-    <li><strong>Signup</strong>: <code>POST /api/auth/signup</code></li>
-    <li><strong>Login</strong>: <code>POST /api/auth/signin</code></li>
-    <li><strong>Submit Step</strong>: <code>POST /api/onboarding/step</code></li>
-  </ul>
+        <li>
+          <span class="method">POST</span>
+          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span><br />
+          <strong>Purpose:</strong> Find how long the user has had
+          sleep problems.<br />
+          <pre>
+{
+  "identity": "45",
+  "stepKey": "sleepStruggleDurationFrom",
+  "data": {
+    "sleepStruggleDurationFrom": "ONE_TO_TWO_WEEKS"
+  },
+  "meta": {
+    "enteredAt": "2025-06-29T06:05:00Z" ,
+    "exitedAt": "2025-06-30T06:06:40Z"
+    },
+  "completedSteps": ["sleepHabitChange"],
+  "onboardingComplete": false
+}
+</pre
+          >
+        </li>
 
-  <p>Example request body:</p>
-  <pre>{
-  "nickname": "yourname",
-  "password": "yourpassword"
-}</pre>
-
-  <p><strong>🔐 After login:</strong> store the JWT and pass it like this:</p>
-  <pre>Authorization: Bearer &lt;your_token_here&gt;</pre>
-
-  <p>
-    Want Swagger UI? <a href="/api-docs" target="_blank" rel="noopener">Click here</a><br/>
-    Want to test manually? <a href="https://www.postman.com/" target="_blank" rel="noopener">Open Postman</a>
-  </p>
-
-  <script>
-    const token = localStorage.getItem("jwtToken");
-    const nickname = localStorage.getItem("nickname");
-
-    if (token && nickname) {
-      document.getElementById("auth-buttons").style.display = "none";
-      document.getElementById("logout-button").classList.remove("hidden");
-      document.getElementById("greeting").classList.remove("hidden");
-      document.getElementById("username").textContent = nickname;
+        <li>
+          <span class="method">POST</span>
+          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span
+          ><br />
+          <strong>Purpose:</strong> Collect user’s usual
+          bedtime.<br />
+          <pre>
+{
+  "identity": "112223",
+  "stepKey": "timeToGoForSleep",
+  "data": {
+    "timeToGoForSleep": {
+        "hour": 11,
+        "period": "AM"
     }
+  },
+  "meta": {
+    "enteredAt": "2025-06-29T06:05:00Z" ,
+    "exitedAt": "2025-06-29T06:06:40Z"
+    },
+  "completedSteps": ["sleepHabitChange"],
+  "onboardingComplete": false
+}
+</pre
+          >
+        </li>
 
-    function logout() {
-      localStorage.clear();
-      window.location.reload();
+        <li>
+          <span class="method">POST</span>
+          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span
+          ><br />
+          <strong>Purpose:</strong> Capture typical wake-up
+          time.<br />
+          <pre>
+{
+  "identity": "112223",
+  "stepKey": "timeToGoWakeUp",
+  "data": {
+    "timeToGoWakeUp": {
+        "hour": 11,
+        "period": "AM"
     }
-  </script>
-</body>
+  },
+  "meta": {
+    "enteredAt": "2025-06-29T06:05:00Z" ,
+    "exitedAt": "2025-06-29T06:06:40Z"
+    },
+  "completedSteps": ["sleepHabitChange"],
+  "onboardingComplete": false
+}
+</pre
+          >
+        </li>
+
+        <li>
+          <span class="method">POST</span>
+          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span
+          ><br />
+          <strong>Purpose:</strong> Collect average sleep duration
+          in hours.<br />
+          <pre>
+{
+  "identity": "112223",
+  "stepKey": "typicalSleepHours",
+  "data": {
+    "typicalSleepHours": 2
+  },
+  "meta": {
+    "enteredAt": "2025-06-29T06:05:00Z" ,
+    "exitedAt": "2025-06-29T06:06:40Z"
+    },
+  "completedSteps": ["sleepHabitChange"],
+  "onboardingComplete": false
+}
+</pre
+          >
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2 class="section-title">🔹 Auth</h2>
+      <ul>
+        <li>
+          <span class="method">POST</span>
+          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/auth/signup</span
+          ><br />
+          <strong>Purpose:</strong> StartFragmentRegister a new
+          user with nickname, password, and unique identity.EndFragment<br />
+          <pre>
+{
+    "nickname":"Nishant",
+    "password":"password",
+    "identity":"45"
+}</pre
+          >
+        </li>
+
+        <li>
+          <span class="method">POST</span>
+          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/auth/signin</span
+          ><br />
+          <strong>Purpose:</strong> Authenticate and receive a JWT
+          token.<br />
+          <pre>
+{
+    "nickname":"Nishant",
+    "password":"password"
+}</pre
+          >
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2 class="section-title">🔹 Analytics</h2>
+      <ul>
+        <li>
+          <span class="method">GET</span>
+          <span class="endpoint"
+            >https://sleep-tracker-sysj.onrender.com/api/analytics/average-screen-time</span
+          ><br />
+          <strong>Purpose:</strong> Fetch average time users spend
+          on onboarding screens.  For internal UX analysis and
+          conversion tracking.<br />
+        </li>
+
+        <li>
+          <span class="method">GET</span>
+          <span class="endpoint"
+            >https://sleep-tracker-sysj.onrender.com/api/analytics/screen-drop-off?idleMinutes=0</span
+          ><br />
+          <strong>Purpose:</strong> Track where users drop off
+          during onboarding.  To identify screens that cause
+          friction.<br />
+        </li>
+      </ul>
+    </section>
+    <script>
+      const token = localStorage.getItem("jwtToken");
+      const nickname = localStorage.getItem("nickname");
+      if (token && nickname) {
+        document.getElementById("auth-buttons").style.display = "none";
+        document.getElementById("logout-button").classList.remove("hidden");
+        document.getElementById("greeting").classList.remove("hidden");
+        document.getElementById("username").textContent = nickname;
+      }
+      function logout() {
+        localStorage.clear();
+        window.location.reload();
+      }
+    </script>
+  </body>
 </html>
