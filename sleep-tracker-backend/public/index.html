@@ -2,92 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sleep Tracker API Docs</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f9fafb;
-        color: #1f2937;
-        padding: 2rem;
-      }
-      h1,
-      h2 {
-        color: #4f46e5;
-      }
-      section {
-        margin-bottom: 2rem;
-      }
-      code,
-      pre {
-        background: #f3f4f6;
-        padding: 0.5rem;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        display: block;
-      }
-      .endpoint {
-        font-weight: bold;
-        color: #059669;
-      }
-      .method {
-        font-weight: bold;
-        background: #e0f2fe;
-        color: #0369a1;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-right: 0.4rem;
-      }
-      ul {
-        background: #ffffff;
-        padding: 1rem;
-        border-radius: 6px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      }
-      li {
-        margin-bottom: 0.5rem;
-      }
-      a {
-        color: #2563eb;
-      }
-      .section-title {
-        border-bottom: 1px solid #d1d5db;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-      }
-      .top-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-      }
-      .greeting {
-        font-size: 1rem;
-        font-weight: bold;
-      }
-      .auth-buttons,
-      .logout-button {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      button {
-        background: #4f46e5;
-        color: white;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 0.3s;
-        font-size: 0.9rem;
-      }
-      button:hover {
-        background: #4338ca;
-      }
-      .hidden {
-        display: none;
-      }
-    </style>
+    <link rel="stylesheet" href="index-style.css" />
   </head>
   <body>
     <h1>💤 Sleep Tracker API</h1>
@@ -110,200 +27,298 @@
       </div>
     </div>
     <p>
-      The Sleep Tracker API supports user authentication and a multi-step
-      onboarding flow to collect sleep-related data like habits, struggles,
-      sleep/wake times, and duration. Each onboarding screen uses a common POST
-      endpoint with different <code>stepKey</code>. JWT tokens are used for
-      secure access. Analytics APIs track screen engagement and drop-offs. All
-      requests use <code>application/json</code>.
+      The Sleep Tracker API supports user authentication and a multi-step onboarding flow to collect sleep-related data like habits, struggles, sleep/wake times, and duration. Each onboarding screen uses a common POST endpoint with different <code>stepKey</code>. JWT tokens are used for secure access. Analytics APIs track screen engagement and drop-offs. All requests use <code>application/json</code>.
     </p>
     <section>
-      <h2 class="section-title">🔹 Onboarding</h2>
-      <ul>
-        <li>
-          <span class="method">POST</span>
-          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span><br />
-          <strong>Purpose:</strong> Capture what sleep improvements
-          the user wants.<br />
-          <pre>
-{
-  "identity": "45",
+  <h2 class="section-title">🔹 Onboarding</h2>
+  <p>
+    All onboarding steps use a shared endpoint:
+    <code>POST /api/onboarding/step</code>. Each step sends a unique
+    <code>stepKey</code> and corresponding <code>data</code>.
+  </p>
+
+  <p><strong>Access Logic:</strong></p>
+  <ul class="reset-ul">
+    <li><strong>Visitors:</strong> No login required. A temporary <code>identity</code> is auto-created from session.</li>
+    <li><strong>Signed-in users:</strong> Use JWT in header: <code>Authorization: Bearer &lt;token&gt;</code>. The <code>nickname</code> becomes <code>identity</code>.</li>
+  </ul>
+
+  <div class="subtitle">🟦 Screen 1: <code>sleepHabitChange</code></div>
+  <div class="on_request">Purpose: Capture what sleep improvements the user wants.</div>
+  <pre><code>{
+  "identity": "nishant52",
   "stepKey": "sleepHabitChange",
   "data": {
     "sleepHabitChange": [
-        "I would go to sleep easily",
-        "I would sleep through the night"
+      "I would go to sleep easily",
+      "I would sleep through the night"
     ]
   },
   "meta": {
-    "enteredAt": "2025-06-29T06:05:00Z" ,
+    "enteredAt": "2025-06-29T06:05:00Z",
     "exitedAt": "2025-06-29T06:06:40Z"
-    },
-  "onboardingComplete": false
-}
-</pre
-          >
-        </li>
+  }
+}</code></pre>
 
-        <li>
-          <span class="method">POST</span>
-          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span><br />
-          <strong>Purpose:</strong> Find how long the user has had
-          sleep problems.<br />
-          <pre>
-{
-  "identity": "45",
+  <div class="subtitle">🟦 Screen 2: <code>sleepStruggleDurationFrom</code></div>
+  <div class="on_request">Purpose: Find how long the user has had sleep problems.</div>
+  <pre><code>{
+  "identity": "nishant52",
   "stepKey": "sleepStruggleDurationFrom",
   "data": {
     "sleepStruggleDurationFrom": "ONE_TO_TWO_WEEKS"
   },
   "meta": {
-    "enteredAt": "2025-06-29T06:05:00Z" ,
+    "enteredAt": "2025-06-30T06:06:00Z",
     "exitedAt": "2025-06-30T06:06:40Z"
-    },
-  "completedSteps": ["sleepHabitChange"],
-  "onboardingComplete": false
-}
-</pre
-          >
-        </li>
+  }
+}</code></pre>
 
-        <li>
-          <span class="method">POST</span>
-          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span
-          ><br />
-          <strong>Purpose:</strong> Collect user’s usual
-          bedtime.<br />
-          <pre>
-{
-  "identity": "112223",
+  <div class="subtitle">🟦 Screen 3: <code>timeToGoForSleep</code></div>
+  <div class="on_request">Purpose: Collect user’s usual bedtime.</div>
+  <pre><code>{
+  "identity": "nishant52",
   "stepKey": "timeToGoForSleep",
   "data": {
     "timeToGoForSleep": {
-        "hour": 11,
-        "period": "AM"
+      "hour": 11,
+      "period": "PM"
     }
   },
   "meta": {
-    "enteredAt": "2025-06-29T06:05:00Z" ,
-    "exitedAt": "2025-06-29T06:06:40Z"
-    },
-  "completedSteps": ["sleepHabitChange"],
-  "onboardingComplete": false
-}
-</pre
-          >
-        </li>
+    "enteredAt": "2025-06-30T06:05:00Z",
+    "exitedAt": "2025-06-30T06:06:40Z"
+  }
+}</code></pre>
 
-        <li>
-          <span class="method">POST</span>
-          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span
-          ><br />
-          <strong>Purpose:</strong> Capture typical wake-up
-          time.<br />
-          <pre>
-{
-  "identity": "112223",
-  "stepKey": "timeToGoWakeUp",
+  <div class="subtitle">🟦 Screen 4: <code>timeToWakeUp</code></div>
+  <div class="on_request">Purpose: Capture typical wake-up time.</div>
+  <pre><code>{
+  "identity": "nishant52",
+  "stepKey": "timeToWakeUp",
   "data": {
-    "timeToGoWakeUp": {
-        "hour": 11,
-        "period": "AM"
+    "timeToWakeUp": {
+      "hour": 7,
+      "period": "AM"
     }
   },
   "meta": {
-    "enteredAt": "2025-06-29T06:05:00Z" ,
-    "exitedAt": "2025-06-29T06:06:40Z"
-    },
-  "completedSteps": ["sleepHabitChange"],
-  "onboardingComplete": false
-}
-</pre
-          >
-        </li>
+    "enteredAt": "2025-06-30T06:10:00Z",
+    "exitedAt": "2025-06-30T06:10:30Z"
+  }
+}</code></pre>
 
-        <li>
-          <span class="method">POST</span>
-          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/onboarding/step</span
-          ><br />
-          <strong>Purpose:</strong> Collect average sleep duration
-          in hours.<br />
-          <pre>
-{
-  "identity": "112223",
+  <div class="subtitle">🟦 Screen 5: <code>typicalSleepHours</code></div>
+  <div class="on_request">Purpose: Collect average sleep duration in hours.</div>
+  <pre><code>{
+  "identity": "nishant52",
   "stepKey": "typicalSleepHours",
   "data": {
-    "typicalSleepHours": 2
+    "typicalSleepHours": 6
   },
   "meta": {
-    "enteredAt": "2025-06-29T06:05:00Z" ,
-    "exitedAt": "2025-06-29T06:06:40Z"
-    },
-  "completedSteps": ["sleepHabitChange"],
-  "onboardingComplete": false
+    "enteredAt": "2025-06-30T06:12:00Z",
+    "exitedAt": "2025-06-30T06:12:30Z"
+  }
+}</code></pre>
+
+  <div class="response">Response Format (generic):</div>
+  <pre><code>{
+  "success": true,
+  "message": "Response recorded for sleepHabitChange. Proceed to sleepStruggleDurationFrom screen.",
+  "nextScreen": "sleepStruggleDurationFrom"
+}</code></pre>
+
+  <div class="response">Final Screen Response:</div>
+  <pre><code>{
+  "success": true,
+  "message": "Response recorded for typicalSleepHours. Onboarding completed.",
+  "nextScreen": "done"
+}</code></pre>
+</section>
+
+
+
+    <section>
+  <h2 class="section-title">🔹 Auth</h2>
+  <p>
+    These APIs handle user registration and login. After signing in, a JWT token is returned, which must be used for any authenticated routes like onboarding (if logged in) or accessing analytics.
+  </p>
+
+  <ul>
+      <div class="request">
+      <span class="method">POST</span>
+      <span class="endpoint">/api/auth/signup</span><br />
+      <strong>Purpose:</strong> Register a new user with a unique <code>nickname</code> and <code>password</code>.  
+  If a user is already active in the current session (visitor mode), the <code>identity</code> from that session should be passed during signup to avoid losing any onboarding progress.
+  <br />
+  </div>
+  <pre>
+{
+  "nickname": "nishant52@sleeptracker.com",
+  "password": "password123",
+  "identity": "112233"
+} </pre>
+      <div class="response">Sample Response:</div>
+      <pre>
+{
+    "success": true,
+    "message": "User created successfully.",
+    "identity": "nishant52@sleeptracker.com"
+} </pre>
+      <div class="request">
+   
+      <span class="method">POST</span>
+      <span class="endpoint">/api/auth/signin</span><br />
+      <strong>Purpose:</strong> Authenticate a user and receive a JWT token to use in subsequent requests.<br />
+      </div>
+      <pre>
+{
+  "nickname": "nishant52@sleeptracker.com",
+  "password": "password123"
+} </pre>
+      <div class="response">Sample Response:</div>
+      <pre>
+{
+    "success": true,
+    "message": "User login successful.",
+    "token": JWT_TOKEN,
+    "nickname": "nishant52@sleeptracker.com"
+} </pre>
+  </ul>
+
+  <div class="subtitle">JWT Token Usage:</div>
+  <p>
+    Use the token received from login in the <code>Authorization</code> header for all authenticated requests:<br />
+    <code>Authorization: Bearer &lt;token&gt;</code> Below are the APIs where the JWT token is used.
+  </p>
+
+  <pre>
+🔹 <code>/api/onboarding/step</code> – Unified onboarding API (needs JWT if logged in)
+
+📊 <code>/api/analytics/average-screen-time</code> – Admin-only | Avg time per screen
+
+🚨 <code>/api/analytics/screen-drop-off</code> – Admin-only | Tracks user exits (idle-based)
+</pre>
+
+
+
+  <div class="subtitle">Admin Role Logic:</div>
+  <p>
+    If the <code>nickname</code> used during login ends with <code>@sleeptracker.com</code>, the system assigns that user the role <code>admin</code>.
+    Admin users are authorized to access the analytics endpoints.
+  </p>
+  </pre>
+</section>
+
+    <section>
+  <h2 class="section-title">🔹 Analytics</h2>
+  <p>
+    Analytics APIs are restricted to <strong>admin users only</strong>. These users must have a nickname ending with <code>@sleeptracker.com</code> and must include a valid JWT token in the header:
+    <code>Authorization: Bearer &lt;token&gt;</code>.
+  </p>
+
+  <ul>
+    <div class="request">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/analytics/average-screen-time</span><br />
+      <strong>Purpose:</strong> Fetch the average time users spend on each onboarding screen for internal UX analysis and conversion tracking.
+      </div>
+      <div class="response">Sample Response:</div>
+      <pre>
+{
+    "success": true,
+    "data": [
+        {
+            "totalResponses": 2,
+            "screen": "sleepHabitChange",
+            "avgDurationInSec": 100
+        },
+        {
+            "totalResponses": 3,
+            "screen": "sleepStruggleDurationFrom",
+            "avgDurationInSec": 57680
+        },
+        {
+            "totalResponses": 1,
+            "screen": "timeToGoForSleep",
+            "avgDurationInSec": 86500
+        }
+    ]
+} </pre>
+      <div class="request">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/analytics/screen-drop-off?idleMinutes=idleMinutes</span><br />
+      <strong>Purpose:</strong> Track which onboarding screens users are dropping off from. Helps identify friction points.<br />
+    </div>
+    <strong>Note:</strong> The <code>idleMinutes</code> parameter defines how long a user must be inactive (no screen transition) before they’re counted as a drop-off. This helps to avoid counting currently active users who are just taking time to respond.<br />
+    <strong>Example:</strong> <code>idleMinutes=5</code> will ignore users idle for less than 5 minutes.
+      <div class="response">Sample Response:</div>
+      <pre>
+{
+    "success": true,
+    "data": [
+        {
+            "screen": "timeToWakeUp",
+            "dropOffCount": 1
+        },
+        {
+            "screen": "timeToGoForSleep",
+            "dropOffCount": 1
+        }
+    ]
+} </pre>
+  </ul>
+</section>
+<section>
+  <div class="api-error-note">
+  🛑 <strong>Error? Yeah, it happens…</strong><br />
+  Whether it's <code>Auth</code>, <code>Onboarding</code>, or <code>Analytics</code> — here’s what failure looks like:
+</div>
+
+<pre class="api-error-response">
+{
+    "success": false,
+    "code": STATUS_CODE,
+    "error": {
+        "name": ERROR_NAME,
+        "message": CUSTOM_MESSAGE,
+        "type": ERROR_TYPE
+    }
 }
-</pre
-          >
-        </li>
-      </ul>
-    </section>
-    <section>
-      <h2 class="section-title">🔹 Auth</h2>
-      <ul>
-        <li>
-          <span class="method">POST</span>
-          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/auth/signup</span
-          ><br />
-          <strong>Purpose:</strong> StartFragmentRegister a new
-          user with nickname, password, and unique identity.EndFragment<br />
-          <pre>
-{
-    "nickname":"Nishant",
-    "password":"password",
-    "identity":"45"
-}</pre
-          >
-        </li>
+</pre>
 
-        <li>
-          <span class="method">POST</span>
-          <span class="endpoint">https://sleep-tracker-sysj.onrender.com/api/auth/signin</span
-          ><br />
-          <strong>Purpose:</strong> Authenticate and receive a JWT
-          token.<br />
-          <pre>
-{
-    "nickname":"Nishant",
-    "password":"password"
-}</pre
-          >
-        </li>
-      </ul>
-    </section>
-    <section>
-      <h2 class="section-title">🔹 Analytics</h2>
-      <ul>
-        <li>
-          <span class="method">GET</span>
-          <span class="endpoint"
-            >https://sleep-tracker-sysj.onrender.com/api/analytics/average-screen-time</span
-          ><br />
-          <strong>Purpose:</strong> Fetch average time users spend
-          on onboarding screens.  For internal UX analysis and
-          conversion tracking.<br />
-        </li>
+<div class="api-error-tip">
+  🤖 <strong>Heads-up:</strong> Common oopsies: missing <code>stepKey</code>, expired/missing token, or trying to sneak into admin routes.
+</div>
+</section>
+<section style="padding: 2rem; background: #f9fafb; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-top: 3rem;">
+  <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 1rem;">🔚 Final Summary</h2>
 
-        <li>
-          <span class="method">GET</span>
-          <span class="endpoint"
-            >https://sleep-tracker-sysj.onrender.com/api/analytics/screen-drop-off?idleMinutes=0</span
-          ><br />
-          <strong>Purpose:</strong> Track where users drop off
-          during onboarding.  To identify screens that cause
-          friction.<br />
-        </li>
-      </ul>
-    </section>
+  <div style="background: #eef2ff; padding: 1rem 1.5rem; border-left: 5px solid #6366f1; border-radius: 6px; margin-bottom: 1.5rem; font-size: 1.05rem;">
+    ✅ <strong>Mission accomplished</strong> — backend is locked and loaded:<br />
+    <span style="display: inline-block; margin-top: 0.5rem;">
+      <code>Onboarding</code> /
+      <code>Auth</code> /
+      <code>Analytics</code>
+      — All set, all secure.
+    </span>
+  </div>
+
+  <ul style="list-style: disc; padding-left: 1.5rem; font-size: 1rem; line-height: 1.7; color: #1e293b;">
+    <li><strong>🔁 Unified Endpoint:</strong> Just pass a <code>stepKey</code> to post onboarding data.</li>
+    <li><strong>⏱️ Smart Drop-off Tracking:</strong> Via <code>nextScreen</code> and timestamps — analytics ready.</li>
+    <li><strong>🔐 JWT Auth & Role-Based Access:</strong> Auth is tight; admin access is email-based (no role flags needed).</li>
+    <li><strong>📊 Admin-Only Insights:</strong> Drop-off and screen time analytics are gated and protected.</li>
+    <li><strong>🧱 Data Model = Analytics-Ready:</strong> Clean, structured storage with every <code>stepKey</code> logged separately.</li>
+    <li><strong>🧑‍🚀 Visitors Supported:</strong> Temporary <code>identity</code> ensures progress sticks even pre-signup.</li>
+    <li><strong>📝 Simple Signup Flow:</strong> Just a <code>nickname</code> + <code>password</code> — no fuss, no frills.</li>
+  </ul>
+
+  <p style="margin-top: 2rem; font-weight: bold; font-size: 1.1rem;">
+  Backend? ✅ Locked, loaded, and built to scale. hit <a href="https://documenter.getpostman.com/view/29087657/2sB34Zq4JL">Postman</a>, hit endpoints, and watch the APIs flex their power. 🛠️📬💥
+</p>
+</section>
     <script>
       const token = localStorage.getItem("jwtToken");
       const nickname = localStorage.getItem("nickname");

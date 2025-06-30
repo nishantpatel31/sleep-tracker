@@ -1,31 +1,43 @@
 # 💤 Sleep Tracker Backend
 
-A backend API for tracking user sleep behavior, built with **Node.js** and **Express**.  
-Supports JWT-based authentication, multi-step onboarding, and analytics like average screen time & drop-off detection.
+A backend API built with **Node.js** + **Express** to track sleep behaviors, power onboarding flows, and crunch analytics — like a dream. 😴
 
-Live Backend: [https://sleep-tracker-sysj.onrender.com](https://sleep-tracker-sysj.onrender.com)
+
+
+Live URL: [https://sleep-tracker-sysj.onrender.com](https://sleep-tracker-sysj.onrender.com)
+
+---
+
+## 🧠 What It Does
+
+- 🔐 **JWT Auth** (Signup/Login)
+- 📲 **Multi-Step Onboarding** via a **unified endpoint**
+- 📊 **Analytics APIs** for average screen time & drop-off detection
+- 🧑‍💻 **Visitor Support** — auto-temp identity without login
+- 🧱 **Clean Data Model** — optimized for analytics
 
 ---
 
-## 🧠 Features
-
-- ✅ **User Auth**: Signup/Login using identity, nickname, and password (JWT-based)
-- 🧭 **Multi-Step Onboarding Flow** via a **single endpoint**:
-  - Sleep habit changes
-  - Struggle duration
-  - Time to go to sleep
-  - Time to wake up
-  - Typical sleep hours
-- 📊 **Analytics**
-  - Drop-off detection on onboarding screens
-  - Average time spent per screen
 
 ---
+
+## 🚀 How to Run Locally
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start in dev mode
+npm run dev
+
+# 3. Start in prod
+npm start
+```
+
 
 ## 📁 Folder Structure
 
 ```
-
 sleep-tracker-backend/
 ├── public/
 ├── src/
@@ -44,149 +56,233 @@ sleep-tracker-backend/
 ├── package.json
 ├── server.js
 └── README.md
-
----
-
-## 🔐 Auth Endpoints
-
-| Method | Endpoint             | Description         |
-|--------|----------------------|---------------------|
-| POST   | `/api/auth/signup`   | Register a user     |
-| POST   | `/api/auth/signin`   | Login and get JWT   |
-
-### Signup Payload
-```json
-{
-  "nickname": "john123",
-  "password": "secret123",
-  "identity": "abc123"
-}
-```
-
-### Signin Payload
-```json
-{
-  "nickname": "john123",
-  "password": "secret123"
-}
 ```
 
 ---
 
-## 🛏️ Onboarding Endpoint
+## 🔐 Auth API
 
-> All onboarding steps use the **same endpoint**:  
-`POST /api/onboarding/step`
+These APIs handle user login/signup. JWT token returned on login is used for all protected routes.
 
-### Common Payload Structure
+### POST `/api/auth/signup`
+
+Register a new user. If a user is already active as a **visitor**, pass their current `identity` to link progress.
+
+**Request:**
 ```json
 {
-  "identity": "abc123",
+  "nickname": "nishant52@sleeptracker.com",
+  "password": "password123",
+  "identity": "112233"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User created successfully.",
+  "identity": "nishant52@sleeptracker.com"
+}
+```
+
+---
+
+### POST `/api/auth/signin`
+
+Authenticate a user and receive a JWT token.
+
+**Request:**
+```json
+{
+  "nickname": "nishant52@sleeptracker.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User login successful.",
+  "token": "<JWT_TOKEN>",
+  "nickname": "nishant52@sleeptracker.com"
+}
+```
+
+🔐 Add this header to all protected routes:
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+✅ If email ends with `@sleeptracker.com` → user is considered an **admin**.
+
+---
+
+## 🛏️ Onboarding API
+
+All onboarding screens use the same endpoint:  
+**POST** `/api/onboarding/step`
+
+### Payload Format
+```json
+{
+  "identity": "nishant52@sleeptracker.com",
   "stepKey": "timeToGoForSleep",
   "data": {
     "timeToGoForSleep": {
       "hour": 11,
-      "period": "AM"
+      "period": "PM"
     }
   },
   "meta": {
-    "enteredAt": "2025-06-29T06:05:00Z",
-    "exitedAt": "2025-06-29T06:06:40Z"
+    "enteredAt": "2025-06-30T06:05:00Z",
+    "exitedAt": "2025-06-30T06:06:40Z"
   },
-  "completedSteps": ["previousStepKey"],
-  "onboardingComplete": false
 }
 ```
 
-### Step Keys and Their Purpose
+### Access Modes
 
-| stepKey                  | Purpose                                      |
-|--------------------------|----------------------------------------------|
-| `sleepHabitChange`       | What sleep improvements user wants           |
-| `sleepStruggleDurationFrom` | Duration of user's sleep issues           |
-| `timeToGoForSleep`       | Usual time the user goes to sleep            |
-| `timeToGoWakeUp`         | Typical wake-up time                         |
-| `typicalSleepHours`      | Avg. sleep hours                             |
+- Visitors (not logged in): Auto-generated `identity` via session
+- Logged-in Users: `identity = nickname` + JWT header
 
 ---
 
-## 📊 Analytics
+### Step Keys & Purpose
 
-### GET `/api/analytics/average-screen-time`
-- Returns avg. screen time per onboarding step.
-- Requires Bearer Token
+| Step Key                  | Purpose                                      |
+|--------------------------|----------------------------------------------|
+| `sleepHabitChange`       | What sleep improvements the user wants       |
+| `sleepStruggleDurationFrom` | How long they’ve had sleep issues         |
+| `timeToGoForSleep`       | Usual time they go to sleep                  |
+| `timeToWakeUp`           | Typical wake-up time                         |
+| `typicalSleepHours`      | Average sleep hours                          |
 
-### GET `/api/analytics/screen-drop-off?idleMinutes=0`
-- Tracks where users drop off during onboarding.
-- Use `idleMinutes` query to define inactivity threshold.
-- Requires Bearer Token
+---
 
+### Example Responses
 
-## 🔒 JWT-Based Authentication & Authorization (⭐ Highlight)
-
-- All protected routes require a **valid JWT token**.
-- Token is issued on login and includes role-based claims (e.g., `"role": "admin"`).
-- Middleware `authenticateToken` checks validity.
-- Optional `authorizeRole("admin")` middleware for restricting access to admin-only routes.
-
-### Sample Token Payload
+**Intermediate Screen:**
 ```json
 {
-  "nickname": "userX",
-  "role": "admin",
-  "iat": 1712345678
+  "success": true,
+  "message": "Response recorded for timeToWakeUp. Proceed to typicalSleepHours screen.",
+  "nextScreen": "typicalSleepHours"
 }
 ```
----
 
-## 🛡️ Auth Notes
-
-- Uses **JWT** for protected routes
-- Role-based access supported via middleware
-- Auth token must be passed as `Authorization: Bearer <token>`
-
----
-
-## 🧪 Testing APIs
-
-Use Postman collection:  
-`sleep-tracker-APIs.postman_collection.json`
-
-Make sure to:
-- Replace `{{PATH}}` with your deployed URL.
-- Add a valid `Authorization` token in headers for protected routes.
+**Final Screen:**
+```json
+{
+  "success": true,
+  "message": "Response recorded for typicalSleepHours. Onboarding completed.",
+  "nextScreen": "done"
+}
+```
 
 ---
 
-## ⚙️ Env Variables Example
+## 📊 Analytics APIs
 
-`.env`
+⚠️ **Admin-only** → Must use a nickname ending with `@sleeptracker.com` + valid JWT token.
+
+### GET `/api/analytics/average-screen-time`
+
+Returns average duration spent on each screen.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "screen": "sleepHabitChange",
+      "totalResponses": 2,
+      "avgDurationInSec": 100
+    },
+    {
+      "screen": "sleepStruggleDurationFrom",
+      "totalResponses": 3,
+      "avgDurationInSec": 57680
+    }
+  ]
+}
+```
+
+---
+
+### GET `/api/analytics/screen-drop-off?idleMinutes=5`
+
+Tracks users who dropped off (didn’t proceed for given idle time).
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "screen": "timeToWakeUp",
+      "dropOffCount": 1
+    }
+  ]
+}
+```
+
+---
+
+## 🧨 Error Format (For All APIs)
+
+```json
+{
+    "success": false,
+    "code": "STATUS_CODE",
+    "error": {
+        "name": "ERROR_NAME",
+        "message": "CUSTOM_MESSAGE",
+        "type": "ERROR_TYPE"
+    }
+}
+```
+
+🧠 Common Gotchas:
+- Missing `stepKey`
+- Expired or missing JWT
+- Trying admin route without `@sleeptracker.com`
+
+---
+
+## 🧪 Testing with Postman
+
+Use [postman collection](https://documenter.getpostman.com/view/29087657/2sB34Zq4JL) to test all APIs.
+
+✅ Replace `{{PATH}}` with the live backend URL  
+✅ Add Authorization header with Bearer Token for protected routes
+
+---
+
+## ⚙️ .env File Example
+
 ```
 PORT=4000
-JWT_SECRET=your_super_secret_key
+JWT_SECRET=super_secret_jwt_key
 MONGO_URI=mongodb://localhost:27017/sleep-tracker
 ```
-
 ---
 
-## 🚀 Run Project
+## 🙌 Final Summary
 
-```bash
-# Install deps
-npm install
-
-# Start in dev
-npm run dev
-
-# Start in prod
-npm start
-```
+🔁 Unified Endpoint: Just pass a stepKey to post onboarding data  
+⏱️ Smart Drop-off Tracking: Via nextScreen and timestamps — analytics ready  
+🔐 JWT Auth & Role-Based Access: Auth is tight; admin access is email-based (no role flags needed)  
+📊 Admin-Only Insights: Drop-off and screen time analytics are gated and protected  
+🧱 Data Model = Analytics-Ready: Clean, structured storage with every stepKey logged separately  
+🧑‍🚀 Visitors Supported: Temporary identity ensures progress sticks even pre-signup  
+📝 Simple Signup Flow: Just a nickname + password — no fuss, no frills  
 
 ---
 
 ## ✍️ Author
 
-Made with 🧠 by Nishant Patel  
-Drop a ⭐ if you find it helpful!
-
----
+Made with ☕ & ❤️ by **Nishant Patel**  
+If this helped you sleep better (or code better), drop a ⭐
